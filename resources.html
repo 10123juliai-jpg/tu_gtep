@@ -37,21 +37,27 @@
 <section class="tg-vault-body" data-body hidden>
   <div class="who"><span>안녕하세요, <b data-who></b>님<em class="adminbadge" data-adminbadge hidden>관리자</em></span><button type="button" class="tg-btn outline sm" data-logout>로그아웃</button></div>
   <p class="verify" data-verify hidden>가입한 이메일로 인증 메일을 보냈습니다. 메일의 링크를 눌러 이메일 인증을 마쳐 주세요.</p>
-  <div class="tg-vtabs" role="tablist" aria-label="자료실 분류"><button type="button" role="tab" data-tab="notice">공지사항<span class="n"></span></button><button type="button" role="tab" data-tab="forms">서식<span class="n"></span></button><button type="button" role="tab" data-tab="expo">전시회<span class="n"></span></button><button type="button" role="tab" data-tab="ecom">전자상거래<span class="n"></span></button></div>
-  <details class="tg-admin" data-admin hidden>
-    <summary>자료 올리기 (관리자)</summary>
+  <div class="tg-vtabbar">
+    <div class="tg-vtabs" role="tablist" aria-label="자료실 분류"><button type="button" role="tab" data-tab="notice">공지사항<span class="n"></span></button><button type="button" role="tab" data-tab="forms">서식<span class="n"></span></button><button type="button" role="tab" data-tab="expo">전시회<span class="n"></span></button><button type="button" role="tab" data-tab="ecom">전자상거래<span class="n"></span></button></div>
+    <button type="button" class="tg-upload" data-open-upload hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg>업로드하기</button>
+  </div>
+  <dialog class="tg-admin" data-admin aria-labelledby="tg-admin-title">
+    <div class="head"><h3 id="tg-admin-title" data-admin-title>새 자료 업로드</h3><button type="button" class="x" data-close-upload aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <form data-add novalidate>
+      <input type="hidden" name="id">
       <label>분류<select name="tab"><option value="notice">공지사항</option><option value="forms">서식</option><option value="expo">전시회</option><option value="ecom">전자상거래</option></select></label>
       <label>날짜<input name="date" placeholder="2026.11.23"></label>
       <label class="wide">제목<input name="title" required maxlength="120"></label>
-      <label class="wide">설명<input name="desc" maxlength="300"></label>
+      <label class="wide">내용<textarea name="desc" rows="3" maxlength="1000"></textarea></label>
       <label class="wide">사이트 안 링크 <small>선택 · 예: notices.html</small><input name="link"></label>
       <label class="wide">첨부파일 <small>선택 · 700KB 이하</small><input name="file" type="file"></label>
+      <p class="curfile wide" data-curfile hidden>현재 첨부: <b data-curname></b><label><input type="checkbox" name="removefile"> 첨부 지우기</label></p>
       <p class="err wide" role="alert"></p>
-      <button class="tg-btn primary" type="submit">올리기</button>
+      <div class="btns wide"><button class="tg-btn outline" type="button" data-cancel>취소</button><button class="tg-btn primary" type="submit" data-submit>업로드</button></div>
     </form>
-    <div class="seed"><span>처음 한 번: 기본 자료(<code>vault-seed.json</code>) 가져오기</span><input type="file" accept=".json" data-seed></div>
-  </details>
+    <div class="seed" data-seedbox><span>처음 한 번: 기본 자료(<code>vault-seed.json</code>) 가져오기</span><input type="file" accept=".json" data-seed></div>
+    <div class="seed" data-demoreset hidden><span>데모에서 바꾼 내용은 이 브라우저에만 저장됩니다.</span><button type="button" class="tg-btn outline sm" data-reset-demo>데모 자료 처음으로</button></div>
+  </dialog>
   <div class="tg-vlist" data-list role="tabpanel"></div>
 </section>
 <noscript><p>자료실은 자바스크립트를 켜야 이용할 수 있습니다.</p></noscript>

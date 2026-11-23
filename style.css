@@ -369,13 +369,34 @@ body{margin:0;background:var(--paper)}
 .tg-login .linkbtn:hover{color:var(--blue-700)}
 .tg-vault-body .adminbadge{margin-left:8px;padding:2px 8px;border-radius:4px;background:var(--accent-600);color:var(--paper);font-style:normal;font-size:12px;font-weight:700}
 .tg-article .tg-vault-body .verify{margin:-8px 0 18px;padding:12px 16px;border-radius:10px;background:var(--blue-50);font-size:14px;color:var(--blue-700)}
-.tg-admin{margin:0 0 8px;padding:14px 18px;border:1px dashed var(--blue-500);border-radius:12px;background:var(--blue-50)}
-.tg-admin summary{cursor:pointer;font-weight:700;color:var(--blue-700)}
-.tg-admin form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+/* 관리자 업로드·수정 팝업 */
+.tg-admin{width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 48px);padding:0;border:0;border-radius:16px;background:var(--paper);color:var(--navy-900);box-shadow:0 24px 60px rgba(5,20,46,.35);font-family:var(--font-sans)}
+.tg-admin::backdrop{background:rgba(5,20,46,.55)}
+.tg-admin .head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.tg-admin h3{margin:0;font-size:19px;font-weight:800;letter-spacing:-.03em}
+.tg-admin .x{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:var(--surface-100);cursor:pointer;color:var(--navy-900)}
+.tg-admin .x svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.tg-admin .x:hover{background:var(--line)}
+.tg-admin form{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px 24px 4px}
+.tg-admin .seed{margin:12px 24px 0}
+.tg-admin > .seed:last-child{margin-bottom:20px}
+.tg-admin .btns{justify-content:flex-end;padding-top:6px}
 .tg-admin label{display:grid;gap:5px;font-size:13px;font-weight:700}
 .tg-admin label small{font-weight:500;color:var(--muted)}
 .tg-admin input,.tg-admin select{height:42px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font:500 14px var(--font-sans)}
 .tg-admin input[type=file]{padding:8px 10px}
+.tg-admin textarea{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font:500 14px/1.6 var(--font-sans);resize:vertical}
+.tg-admin .curfile{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0;font-size:13px;color:var(--muted)}
+.tg-admin .curfile label{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--accent-600)}
+.tg-admin .curfile input{height:auto}
+.tg-admin .btns{display:flex;gap:10px}
+.tg-admin .btns .tg-btn::after{display:none}
+.tg-admin.editing .head{background:#fff8f3}
+.tg-admin.editing h3{color:var(--accent-600)}
+.tg-edit{height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);font:700 13px var(--font-sans);color:var(--blue-700);cursor:pointer}
+.tg-edit:hover{border-color:var(--blue-500);background:var(--blue-50)}
+.tg-vitem.flash{animation:tgFlash 1.6s ease}
+@keyframes tgFlash{0%{background:var(--blue-50)}100%{background:transparent}}
 .tg-admin .wide{grid-column:1/-1}
 .tg-admin .err{margin:0;font-size:13px!important;color:var(--accent-600)!important}.tg-admin .err.ok{color:var(--teal-600)!important}
 .tg-admin .seed{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
@@ -383,7 +404,12 @@ body{margin:0;background:var(--paper)}
 .tg-del:hover{border-color:var(--accent-600);background:#fff5f0}
 @media (max-width:760px){.tg-admin form{grid-template-columns:1fr}}
 .tg-vault-body .who{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;font-size:15px}
-.tg-vtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:16px;border-bottom:2px solid var(--navy-900)}
+.tg-vtabbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:16px;border-bottom:2px solid var(--navy-900)}
+.tg-vtabs{display:flex;gap:8px;flex-wrap:wrap}
+.tg-upload{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px 0 14px;border:0;border-radius:999px;background:var(--blue-500);color:var(--paper);font:700 15px var(--font-sans);cursor:pointer;transition:background .2s,transform .2s}
+.tg-upload svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tg-upload:hover{background:var(--blue-700)}
+.tg-upload:hover svg{transform:translateY(-1px)}
 .tg-vtabs button{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border:1px solid var(--line);border-radius:999px;background:var(--paper);font:700 15px var(--font-sans);color:var(--muted);cursor:pointer;transition:.2s}
 .tg-vtabs button .n{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--surface-100);font:700 12px/22px var(--font-en);color:var(--muted)}
 .tg-vtabs button:hover{border-color:var(--blue-500);color:var(--blue-700)}
