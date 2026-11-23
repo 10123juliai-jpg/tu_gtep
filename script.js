@@ -32,10 +32,13 @@
     if (!gnb) return;
     function open() { clearTimeout(timer); hd.classList.add('mega'); }
     function close() { timer = setTimeout(function () { hd.classList.remove('mega'); }, 250); }
-    gnb.addEventListener('mouseenter', open);
+    // 하위 메뉴가 있는 메뉴에만 펼침 (자료실처럼 하위 메뉴가 없으면 펼치지 않음)
+    gnb.querySelectorAll('.item').forEach(function (it) {
+      it.addEventListener('mouseenter', function () { if (it.querySelector('.sub')) open(); else { clearTimeout(timer); hd.classList.remove('mega'); } });
+    });
     hd.addEventListener('mouseleave', close);
     hd.addEventListener('mouseenter', function () { if (hd.classList.contains('mega')) clearTimeout(timer); });
-    gnb.addEventListener('focusin', open);
+    gnb.addEventListener('focusin', function (e) { if (e.target.closest('.item') && e.target.closest('.item').querySelector('.sub')) open(); });
     hd.addEventListener('focusout', function (e) { if (!hd.contains(e.relatedTarget)) close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hd.classList.remove('mega'); });
   });
