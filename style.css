@@ -434,6 +434,122 @@ body{margin:0;background:var(--paper)}
 .tg-adminlink:hover{opacity:1;background:rgba(127,140,160,.12)}
 .tg-adminlink svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
 @media (max-width:760px){.tg-adminlink{padding:0;width:36px;justify-content:center;border:0}.tg-adminlink span{display:none}.tg-post .pnav > *{grid-template-columns:56px 1fr}.tg-post .pnav time{display:none}}
+.tg-article p.sign{margin-top:36px;text-align:right;font-weight:700;font-size:17px}
+/* 헤더 로그인 버튼 */
+.tg-loginbtn{display:inline-flex;align-items:center;height:34px;padding:0 16px;border-radius:999px;background:var(--blue-500);color:var(--paper);font-size:13px;font-weight:700;white-space:nowrap}
+.tg-loginbtn:hover{background:var(--blue-700)}
+.tg-util a.tg-loginbtn:not(.on),.tg-header.over .tg-util a.tg-loginbtn:not(.on){color:#fff}
+/* 관련 사이트 버튼 (전체 메뉴 · 푸터) */
+.tg-sitebtn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;color:var(--navy-900);white-space:nowrap}
+.tg-sitebtn:hover{border-color:var(--blue-500);color:var(--blue-700)}
+@media (min-width:1101px){.tg-allmenu .grid{grid-template-columns:repeat(6,1fr);gap:24px}}
+.tg-allmenu .sites{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:32px;padding-top:20px;border-top:1px solid var(--line)}
+.tg-allmenu .sites b{margin-right:8px;font-size:14px}
+.tg-allmenu .sites a.tg-sitebtn{display:inline-flex;padding:0 14px;color:var(--navy-900)}
+.tg-footer .tg-fbottom .sites{display:flex;gap:8px}
+.tg-footer .tg-fbottom a.tg-sitebtn{opacity:1;border-color:rgba(255,255,255,.3);color:var(--paper)}
+.tg-footer .tg-fbottom a.tg-sitebtn:hover{border-color:var(--paper);text-decoration:none}
+.tg-loginbtn.on{background:transparent;color:inherit;border:1px solid currentColor;opacity:.85}
+@media (max-width:1100px){.tg-util>a.tg-loginbtn{display:inline-flex}}
+/* 로그인 페이지: 회원 / 관리자 탭 */
+.tg-loginpage{max-width:1040px;margin:8px auto 0;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;background:var(--paper)}
+.tg-loginpage .ltabs{display:grid;grid-template-columns:1fr 1fr;background:var(--navy-950)}
+.tg-loginpage .ltabs button{height:64px;border:0;background:transparent;color:var(--muted-on-dark);font:700 17px var(--font-sans);cursor:pointer}
+.tg-loginpage .ltabs button.on{background:var(--paper);color:var(--navy-950)}
+.tg-loginpage .lbody{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:48px 0}
+.tg-loginpage .lleft{padding:0 48px;border-right:1px dashed var(--line)}
+.tg-loginpage .lright{padding:0 48px}
+.tg-loginpage .licon{display:grid;place-items:center;width:96px;height:96px;margin:0 auto 20px;border-radius:50%;background:var(--navy-900)}
+.tg-loginpage .licon svg{width:48px;height:48px;fill:none;stroke:var(--paper);stroke-width:1.6}
+.tg-loginpage .licon circle{fill:var(--paper);stroke:none}
+.tg-loginpage .tg-login{max-width:none;margin:0;padding:0;border:0;box-shadow:none;background:none}
+.tg-loginpage .tg-login .lock,.tg-loginpage .tg-login .help{display:none}
+.tg-loginpage .lright h2{margin:0 0 18px;font-size:26px}
+.tg-loginpage .lright ul{margin:0;padding-left:18px;line-height:2;font-size:15px}
+.tg-article .tg-loginpage .warn{margin:22px 0 0;padding:12px 14px;border-radius:10px;background:#fff4f0;color:#b3261e;font-size:14px}
+.tg-loginpage .ldone{text-align:center;padding:12px 0}
+.tg-loginpage .ldone .btns,.tg-needlogin .btns{display:flex;gap:10px;justify-content:center;margin-top:18px}
+@media (max-width:760px){.tg-loginpage .lbody{grid-template-columns:1fr;gap:32px;padding:32px 0}.tg-loginpage .lleft{border-right:0}.tg-loginpage .lleft,.tg-loginpage .lright{padding:0 20px}}
+/* 자료실 로그인 안내 */
+.tg-needlogin{max-width:520px;margin:24px auto;padding:40px 32px;text-align:center;border:1px solid var(--line);border-radius:var(--radius-md)}
+.tg-needlogin .lock{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:var(--blue-50)}
+.tg-needlogin .lock svg{width:30px;height:30px;fill:none;stroke:var(--blue-700);stroke-width:1.8}
+.tg-article .tg-needlogin h2{margin:0 0 8px;font-size:22px}
+.tg-article .tg-needlogin p{margin:0;color:var(--muted);font-size:15px}
+/* 관리자에게만 보이는 영역 */
+.tg-adminonly{margin-top:40px;padding:24px 28px;border:2px dashed var(--accent-600);border-radius:var(--radius-md)}
+.tg-adminonly h2 small{margin-left:8px;font-size:12px;font-weight:700;color:var(--accent-600)}
+.tg-adminbar .seed{cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-weight:700}
+/* 푸터 맨 아래: 저작권 + 작은 관리자 링크 */
+.tg-footer .tg-fbottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:36px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:var(--muted-on-dark)}
+.tg-footer .tg-fbottom a{color:var(--muted-on-dark);opacity:.7}
+.tg-footer .tg-fbottom a:hover{opacity:1;text-decoration:underline}
+/* 메뉴 6개: 간격 조정 */
+.tg-gnb{gap:44px}
+.tg-gnb > .item > a{white-space:nowrap}
+@media (max-width:1280px){.tg-gnb{gap:28px}}
+/* 관리자 모드 표시줄 */
+.tg-adminbar{position:relative;z-index:30;background:var(--accent-600);color:var(--paper);font-size:13px}
+.tg-adminbar .tg-in{max-width:1360px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:38px}
+.tg-adminbar .r{display:flex;gap:14px;align-items:center}
+.tg-adminbar a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.tg-adminbar button{border:1px solid rgba(255,255,255,.7);border-radius:999px;background:transparent;color:var(--paper);font:700 12px var(--font-sans);height:26px;padding:0 12px;cursor:pointer}
+.is-admin .tg-hero .tg-header.over{top:38px}
+/* 연혁 */
+.tg-history{list-style:none;margin:24px 0;padding:0;border-left:2px solid var(--blue-100)}
+.tg-history > li{position:relative;padding:0 0 30px 32px}
+.tg-history > li::before{content:"";position:absolute;left:-8px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--blue-500)}
+.tg-history > li:first-child::before{background:var(--blue-500)}
+.tg-history b{display:block;font:800 26px/1.2 var(--font-en);color:var(--blue-700);margin-bottom:8px}
+.tg-history ul{margin:0;padding-left:18px;line-height:1.9;font-size:15px}
+/* 조직도 */
+.tg-org{display:grid;justify-items:center;gap:0;margin:28px 0 40px}
+.tg-org > div > div,.tg-org .lv1{display:grid;justify-items:center;gap:4px;padding:20px 24px;border-radius:14px;text-align:center}
+.tg-org .lv1{min-width:240px;background:var(--navy-950);color:var(--paper)}
+.tg-org .lv1 span{color:var(--muted-on-dark);font-size:14px}
+.tg-org small{font:700 11px var(--font-en);letter-spacing:.06em;color:var(--sky-300)}
+.tg-org b{font-size:18px}
+.tg-org .lv2{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%;max-width:640px;margin-top:40px}
+.tg-org .lv2::before{content:"";position:absolute;left:50%;top:-40px;width:2px;height:20px;background:var(--line)}
+.tg-org .lv2::after{content:"";position:absolute;left:25%;right:25%;top:-20px;height:2px;background:var(--line)}
+.tg-org .lv2 > div{position:relative;background:var(--blue-50)}
+.tg-org .lv2 > div::before{content:"";position:absolute;left:50%;top:-20px;width:2px;height:20px;background:var(--line)}
+.tg-org .lv2 small{color:var(--blue-700)}
+.tg-org .lv2 span{font-size:13px;color:var(--muted)}
+/* 찾아오시는 길 */
+.tg-map-embed iframe{display:block;width:100%;height:420px;border:0;border-radius:var(--radius-md)}
+.tg-locinfo{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:20px 0;border-radius:var(--radius-md);overflow:hidden;background:var(--line)}
+.tg-locinfo div{padding:18px 20px;background:var(--surface-100)}
+.tg-locinfo small{display:block;font-size:12px;font-weight:700;color:var(--blue-700);margin-bottom:4px}
+.tg-locinfo b{font-size:15px;font-weight:600}
+/* 수료 요건 */
+.tg-steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 14px}
+.tg-steps3 > div{display:grid;gap:4px;padding:22px;border-radius:14px;background:var(--blue-50)}
+.tg-steps3 small{font:700 11px var(--font-en);letter-spacing:.06em;color:var(--blue-500)}
+.tg-steps3 b{font-size:18px}
+.tg-steps3 em{font-style:normal;font:800 26px/1.2 var(--font-en);color:var(--blue-700)}
+.tg-steps3 span{font-size:13px;font-weight:700;color:var(--navy-900)}
+.tg-article .tg-steps3 p{margin:6px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
+.tg-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-radius:14px;background:var(--navy-950);color:var(--paper)}
+.tg-total b{font-size:20px}.tg-total span{font-size:13px;color:var(--muted-on-dark)}
+/* 절차·카드·태그 */
+.tg-flow{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:18px 0 28px;padding:0;counter-reset:f}
+.tg-flow li{position:relative;flex:1 1 130px;display:grid;gap:4px;padding:16px 14px;border:1px solid var(--line);border-radius:12px;counter-increment:f}
+.tg-flow li::before{content:counter(f, decimal-leading-zero);font:800 12px var(--font-en);color:var(--blue-500)}
+.tg-flow b{font-size:15px}.tg-flow span{font-size:12.5px;line-height:1.5;color:var(--muted)}
+.tg-cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 24px}
+.tg-cards3.four{grid-template-columns:repeat(2,1fr)}
+.tg-cards3 > div{padding:20px 22px;border-radius:14px;background:var(--surface-100)}
+.tg-cards3 b{font-size:16px}
+.tg-article .tg-cards3 p{margin:6px 0 0;font-size:14px;line-height:1.65;color:var(--muted)}
+.tg-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tg-tags span{height:32px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600}
+/* 사이트맵 */
+.tg-sitemap{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.tg-sitemap b{display:block;padding-bottom:12px;margin-bottom:8px;border-bottom:2px solid var(--navy-900);font-size:18px}
+.tg-sitemap a{display:block;padding:7px 0;font-size:15px;color:var(--muted)}
+.tg-sitemap a:hover{color:var(--blue-700)}
+@media (max-width:760px){.tg-steps3,.tg-cards3,.tg-cards3.four,.tg-locinfo{grid-template-columns:1fr}.tg-sitemap{grid-template-columns:1fr 1fr}.tg-org .lv2{grid-template-columns:1fr}.tg-org .lv2::after{display:none}.tg-adminbar .tg-in > span:first-child{font-size:12px}}
 /* 사업단 일정 게시판 */
 .tg-events{list-style:none;margin:0 0 40px;padding:0}
 .tg-events li{display:grid;grid-template-columns:110px 1fr auto;gap:20px;align-items:center;padding:20px 4px;border-bottom:1px solid var(--line)}

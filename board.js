@@ -13,7 +13,8 @@ const MAX_FILE = 700 * 1024;
 const BOARDS = {
   notices: { label: '공지사항', tabs: [['공지', '공지'], ['모집', '모집'], ['활동', '활동'], ['성과', '성과']], fields: ['tab', 'date', 'title', 'body', 'link', 'file'] },
   press: { label: '보도자료', fields: ['date', 'title', 'body', 'link', 'image'], bodyLabel: '한 줄 설명 (예: 인도 · 2026)' },
-  faq: { label: 'FAQ', fields: ['order', 'title', 'body', 'link'], titleLabel: '질문', bodyLabel: '답변' },
+  gallery: { label: '활동사진', fields: ['date', 'title', 'body', 'link', 'image'], bodyLabel: '한 줄 설명 (예: 자카르타 · 2026)' },
+  faq: { label: '자주 묻는 질문', tabs: [['student', '예비지원자'], ['company', '협력기업']], fields: ['tab', 'order', 'title', 'body', 'link'], titleLabel: '질문', bodyLabel: '답변' },
   events: { label: '사업단 일정', fields: ['date', 'title', 'body', 'link'], titleLabel: '일정 이름', bodyLabel: '장소·시간·내용' },
   vault: { label: '자료실', private: true, tabs: [['notice', '공지사항'], ['forms', '서식'], ['expo', '전시회'], ['ecom', '전자상거래']], fields: ['tab', 'date', 'title', 'body', 'link', 'file'] },
 };
@@ -33,8 +34,7 @@ const sorter = name => (name === 'faq' ? (a, b) => (+a.order || 999) - (+b.order
   : name === 'events' ? (a, b) => (a.date || '').localeCompare(b.date || '') || ts(a) - ts(b) : byDate);   // 일정은 날짜 빠른 순
 const imgSrc = im => (!im ? '' : im.url || `data:${im.type};base64,${im.data}`);
 
-const needsAuth = $('[data-gate],[data-board-view],[data-post-view],[data-latest],[data-calendar],[data-whobar]');
-if (!needsAuth) return;
+// 모든 페이지에서 로그인 상태를 확인합니다 (관리자 모드 표시줄을 어느 페이지에서나 보여 주기 위해)
 
 // ================= 저장소 · 로그인 (데모 / Firebase) =================
 let store, auth, user = null;
@@ -54,17 +54,26 @@ if (DEMO) {
     saveSettings: async s => { try { localStorage.setItem(SKEY, JSON.stringify(s)); } catch (x) {} },
     users: async () => null,
     resetDemo: () => { Object.keys(BOARDS).forEach(b => { try { localStorage.removeItem(key(b)); } catch (x) {} }); },
-    ko: e => (e && e.code === 'demo/full' ? '저장 공간이 가득 찼습니다. 더 작은 파일로 올려 주세요.' : '문제가 생겼습니다.'),
+    ko: e => ({ 'demo/full': '저장 공간이 가득 찼습니다. 더 작은 파일로 올려 주세요.', 'auth/invalid-credential': '이메일 또는 비밀번호가 맞지 않습니다.', 'auth/email-already-in-use': '사용할 수 없는 이메일입니다.' }[e && e.code] || '문제가 생겼습니다.'),
   };
   const nameOf = em => (String(em).split('@')[0] || '').trim() || '방문자';
   const set = u => { user = u; try { u ? sessionStorage.setItem(UKEY, JSON.stringify(u)) : sessionStorage.removeItem(UKEY); } catch (x) {} emit(); };
+  const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
   auth = {
-    login: async (email) => set({ name: nameOf(email), email, admin: /^admin$/i.test(nameOf(email)) || ADMINS.includes(String(email).toLowerCase()), verified: true }),
-    signup: async (name, email) => set({ name: name || nameOf(email), email, admin: /^admin$/i.test(nameOf(email)), verified: true }),
+    // 관리자: 이메일 admin + 관리자 비밀번호(해시가 firebase-config.js의 demoAdminHash와 일치)일 때만. 그 밖에는 일반 회원.
+    login: async (email, pw) => {
+      if (/^admin$/i.test(String(email).trim())) {
+        if (!CFG.demoAdminHash || !crypto.subtle || (await sha('tu-gtep-admin:' + (pw || ''))) !== CFG.demoAdminHash) throw { code: 'auth/invalid-credential' };
+        return set({ name: '관리자', email: 'admin', admin: true, verified: true });
+      }
+      return set({ name: nameOf(email), email, admin: false, verified: true });
+    },
+    signup: async (name, email) => { if (/^admin$/i.test(String(email).trim())) throw { code: 'auth/email-already-in-use' }; return set({ name: name || nameOf(email), email, admin: false, verified: true }); },
     reset: async () => { throw { code: 'demo/reset' }; },
     logout: async () => set(null),
   };
   try { user = JSON.parse(sessionStorage.getItem(UKEY) || 'null'); } catch (x) {}
+  if (user && user.admin && user.email !== 'admin') user = null;   // 예전 방식으로 저장된 관리자 상태는 무효
   setTimeout(emit);
 } else {
   const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
@@ -104,6 +113,25 @@ if (DEMO) {
 }
 const onUser = f => listeners.push(f);
 
+// ================= 관리자 모드 표시줄 (관리자로 로그인했을 때만, 모든 페이지 맨 위) =================
+const abar = document.createElement('div');
+abar.className = 'tg-adminbar'; abar.hidden = true;
+abar.innerHTML = '<div class="tg-in"><span><b>관리자 모드</b></span><span class="r"><label class="seed" data-seedbox hidden>기본 자료 가져오기<input type="file" accept=".json" data-seed-import hidden></label><button type="button" data-ab-logout>로그아웃</button></span></div>';
+document.body.prepend(abar);
+$('[data-ab-logout]', abar).addEventListener('click', () => auth.logout());
+onUser(u => {
+  const adm = !!(u && u.admin);
+  abar.hidden = !adm; document.body.classList.toggle('is-admin', adm);
+  $$('[data-admin-only]').forEach(x => { x.hidden = !adm; if (adm) $$('[data-calendar-form],[data-users]', x).forEach(y => y.dispatchEvent(new Event('tg:show'))); });
+});
+
+// ================= 헤더 로그인 버튼 =================
+$$('[data-loginlink]').forEach(a => {
+  a.addEventListener('click', e => { if (user) { e.preventDefault(); auth.logout(); } });
+  onUser(u => { a.textContent = u ? '로그아웃' : '로그인'; a.title = u ? `${u.name}님 로그인 중` : ''; a.classList.toggle('on', !!u); });
+});
+let justIn = false;   // 로그인 페이지: 방금 로그인했으면 원래 보던 페이지로 이동
+
 // ================= 로그인 상자 (data-auth) =================
 function msg(f, text, ok = false) { const e = f.querySelector('.err'); if (!e) return; e.textContent = text; e.classList.toggle('ok', ok); }
 async function busy(f, label, fn) { const b = f.querySelector('button[type=submit]'), old = b.textContent; b.disabled = true; b.textContent = label; try { await fn(); } finally { b.disabled = false; b.textContent = old; } }
@@ -118,7 +146,14 @@ $$('[data-auth]').forEach(box => {
   $('[data-form="login"]', box)?.addEventListener('submit', e => {
     e.preventDefault(); const f = e.target, em = val(f, 'email'), pw = el(f, 'password').value;
     if (!DEMO && (!em || !pw)) return msg(f, '이메일과 비밀번호를 입력해 주세요.');
-    busy(f, '확인 중…', async () => { try { await auth.login(em, pw); f.reset(); } catch (err) { msg(f, store.ko(err)); } });
+    busy(f, '확인 중…', async () => {
+      try {
+        await auth.login(em, pw);
+        const adm = DEMO ? !!user?.admin : ADMINS.includes(em.toLowerCase());
+        if (box.hasAttribute('data-admin-login') && !adm) { await auth.logout(); return msg(f, '관리자 계정이 아닙니다. 회원 로그인 탭을 이용해 주세요.'); }
+        justIn = true; f.reset(); if (user) emit();
+      } catch (err) { msg(f, store.ko(err)); }
+    });
   });
   $('[data-form="signup"]', box)?.addEventListener('submit', e => {
     e.preventDefault(); const f = e.target, name = val(f, 'name'), em = val(f, 'email'), pw = el(f, 'password').value;
@@ -128,7 +163,7 @@ $$('[data-auth]').forEach(box => {
       if (pw !== el(f, 'password2').value) return msg(f, '비밀번호 확인이 일치하지 않습니다.');
       if (!el(f, 'agree').checked) return msg(f, '개인정보 수집·이용에 동의해야 가입할 수 있습니다.');
     }
-    busy(f, '가입 중…', async () => { try { await auth.signup(name, em, pw); f.reset(); } catch (err) { msg(f, store.ko(err)); } });
+    busy(f, '가입 중…', async () => { try { justIn = true; await auth.signup(name, em, pw); f.reset(); emit(); } catch (err) { justIn = false; msg(f, store.ko(err)); } });
   });
   $('[data-form="reset"]', box)?.addEventListener('submit', e => {
     e.preventDefault(); const f = e.target, em = val(f, 'email');
@@ -142,9 +177,9 @@ $$('[data-auth]').forEach(box => {
 
 // ================= 인사말 줄 (data-whobar) =================
 $$('[data-whobar]').forEach(bar => {
-  bar.innerHTML = '<span>안녕하세요, <b data-who></b>님<em class="adminbadge" hidden>관리자</em></span><span class="right"><a class="tg-btn outline sm adminlink" href="admin.html" hidden>관리자 페이지</a><button type="button" class="tg-btn outline sm" data-logout>로그아웃</button></span>';
+  bar.innerHTML = '<span>안녕하세요, <b data-who></b>님<em class="adminbadge" hidden>관리자</em></span><span class="right"><button type="button" class="tg-btn outline sm" data-logout>로그아웃</button></span>';
   $('[data-logout]', bar).addEventListener('click', () => auth.logout());
-  onUser(u => { bar.hidden = !u; if (!u) return; $('[data-who]', bar).textContent = u.name; $('.adminbadge', bar).hidden = !u.admin; $('.adminlink', bar).hidden = !u.admin || !!bar.closest('[data-gate="admin"]'); });
+  onUser(u => { bar.hidden = !u; if (!u) return; $('[data-who]', bar).textContent = u.name; $('.adminbadge', bar).hidden = !u.admin; });
 });
 
 // ================= 잠금 (data-gate="member" | "admin") =================
@@ -156,7 +191,7 @@ $$('[data-gate]').forEach(g => {
     $$('[data-denied]', g).forEach(x => { x.hidden = !(u && !ok); });
     $$('[data-unlocked]', g).forEach(x => { x.hidden = !ok; });
     document.body.classList.toggle('is-locked', !ok);
-    if (ok) $$('[data-board-view],[data-calendar-form],[data-users]', g).forEach(x => x.dispatchEvent(new Event('tg:show')));
+    if (ok) $$('[data-board-view]', g).forEach(x => x.dispatchEvent(new Event('tg:show')));
   });
 });
 
@@ -334,7 +369,7 @@ async function renderCalendars() {
   calViews.forEach(c => {
     const src = calSrc(s.calendar, c.dataset.calendar || 'MONTH');
     c.innerHTML = src ? `<iframe src="${esc(src)}" title="GTEP 사업단 일정 (구글 캘린더)" loading="lazy"></iframe>`
-      : `<div class="tg-calempty"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b>아직 연결된 캘린더가 없습니다</b><p>${user?.admin ? '<a href="admin.html#calendar">관리자 페이지 › 사업단 일정</a>에서 구글 캘린더를 연결하세요.' : '사업단 일정이 곧 이곳에 표시됩니다.'}</p></div>`;
+      : `<div class="tg-calempty"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b>아직 연결된 캘린더가 없습니다</b><p>${user?.admin ? '<a href="calendar.html#calset">공지사항 › 사업단 일정</a> 아래 "구글 캘린더 연결"에서 캘린더를 연결하세요.' : '사업단 일정이 곧 이곳에 표시됩니다.'}</p></div>`;
   });
 }
 renderCalendars(); onUser(renderCalendars);
@@ -363,6 +398,26 @@ $$('[data-users]').forEach(box => box.addEventListener('tg:show', async () => {
       : '<p class="empty">아직 가입한 회원이 없습니다.</p>';
   } catch (err) { box.innerHTML = `<p class="empty">${esc(store.ko(err))}</p>`; }
 }));
+
+// ================= 로그인 페이지 (회원 / 관리자 탭) =================
+$$('[data-loginpage]').forEach(pg => {
+  const q = new URLSearchParams(location.search);
+  const next = /^[\w-]+\.html(#[\w-]*)?$/.test(q.get('next') || '') ? q.get('next') : 'index.html';
+  const tab = k => {
+    $$('[data-ltab]', pg).forEach(b => { const on = b.dataset.ltab === k; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    $$('[data-lpanel],[data-linfo]', pg).forEach(x => { x.hidden = (x.dataset.lpanel || x.dataset.linfo) !== k; });
+    if (user) $$('[data-lpanel]', pg).forEach(x => { x.hidden = true; });
+  };
+  $$('[data-ltab]', pg).forEach(b => b.addEventListener('click', () => tab(b.dataset.ltab)));
+  if (q.get('mode') === 'signup') $('[data-lpanel="member"] .tg-authtabs [data-mode="signup"]', pg)?.click();
+  $('[data-logout]', pg).addEventListener('click', () => auth.logout());
+  onUser(u => {
+    if (u && justIn) { location.href = next; return; }
+    const done = $('[data-ldone]', pg); done.hidden = !u;
+    if (u) $('[data-who]', done).textContent = u.name;
+    tab($('[data-ltab].on', pg).dataset.ltab);
+  });
+});
 $$('[data-reset-demo]').forEach(b => { b.hidden = !DEMO; b.addEventListener('click', () => { if (confirm('이 브라우저에서 바꾼 내용을 모두 지우고 처음 자료로 되돌릴까요?')) { store.resetDemo(); location.reload(); } }); });
 $$('[data-seed-import]').forEach(inp => {
   inp.closest('[data-seedbox]').hidden = DEMO;

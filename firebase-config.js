@@ -16,5 +16,7 @@
 // };
 window.TG_FIREBASE = {
   config: null,
-  admins: []
+  admins: [],
+  // Firebase 연결 전 임시 관리자 비밀번호의 확인용 값 (tools/set_admin_password.py 로 바꿈)
+  demoAdminHash: "3346eaef5ae7a8739506efe715ab8a4e09719fc93e17ff6d8bc77940b540c57c"
 };
